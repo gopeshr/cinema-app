@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Film Entry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    
+</head>
+<body>
+    <h1>Add Film Entry</h1>
+    
+    <form method="POST" action="/">
+        <label for="film_name">Film Name:</label><br>
+        <input type="text" id="film_name" name="film_name" required><br><br>
+
+        <label for="release_year">Release Year:</label><br>
+        <input type="number" id="release_year" name="release_year"><br><br>
+
+        <label for="new_watched_time">Watched Time (Optional)</label><br>
+        <input type="datetime-local" id="new_watched_time" name="new_watched_time"><br><br>
+
+        <label for="rating">Rating (0-10):</label><br>
+        <input type="text" id="rating" name="rating" pattern="^(?:\d*\.\d{1,2}|\d+)$" title="Enter a number between 0 and 10" required><br><br>
+
+        <label for="review">Review:</label><br>
+        <textarea id="review" name="review"></textarea><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+    <a href="/saved_list">View Saved List</a>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Saved Film Entries</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='saved_list.css') }}">
+    <style>
+        .add-film-link {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .clear-filter {
+            font-size: small;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Saved Film Entries</h1>
+    <form method="POST" action="{{ url_for('saved_list') }}">
+        <label for="film_name">Filter by Film Name:</label>
+        <input type="text" id="film_name" name="film_name">
+
+        <label for="release_year">Filter by Release Year:</label>
+        <input type="number" id="release_year" name="release_year">
+
+        <label for="watched_year">Filter by Watched Year:</label>
+        <input type="number" id="watched_year" name="watched_year">
+
+        <label for="rating_operator">Filter by Rating:</label>
+        <select id="rating_operator" name="rating_operator">
+            <option value="=">Equal to</option>
+            <option value=">">Greater than</option>
+            <option value="<">Less than</option>
+            <option value="!">No Rating</option>
+        </select>
+        <input type="text" id="rating_value" name="rating_value" placeholder="Enter rating value" pattern="^(?:\d*\.\d{1,2}|\d+)$">
+        <a href="{{ url_for('saved_list') }}" class='clear-filter'>Clear Filters</a>
+
+        <input type="submit" value="Filter">
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Film Name</th>
+                <th>Release Year</th>
+                <th>Watched Time</th>
+                <th>Rating</th>
+                <th>Review</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for film in films %}
+                <tr>
+                    <td><a href="{{ url_for('film_details', film_id=film[0]) }}">{{ film[1] }}</a></td>
+                    <td>
+                        {% if film[2] is not none %}
+                            {{ film[2] }}
+                        {% endif %}
+                    </td>
+                    
+                    <td>{{ film[3] }}</td>
+                    <td>{{ film[4] }}</td>
+                    <td>
+                        {% if film[5] is not none and film[5]|length > 50 %}
+                            {{ film[5][:50] }}... <a href="{{ url_for('film_details', film_id=film[0]) }}">More</a>
+                        {% elif film[5] is not none %}
+                            {{ film[5] }}
+                        {% endif %}
+                    </td>                    
+                    <td>
+                        <a href="{{ url_for('edit', film_id=film[0]) }}">Edit</a>
+                        <a href="#" onclick="confirmDelete('{{ url_for('delete', film_id=film[0]) }}')">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="/" class="add-film-link">Add New Film Entry</a>
+
+    <script>
+        function confirmDelete(deleteUrl) {
+            if (confirm("Are you sure you want to delete this film?")) {
+                window.location.href = deleteUrl;
+            }
+        }
+    </script>
+</body>
+</html>

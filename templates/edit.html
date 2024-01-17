@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Film Entry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='edit.css') }}">
+</head>
+<body>
+    <h1>Edit Film Entry</h1>
+    <form method="POST" action="">
+        <label for="film_name">Film Name:</label><br>
+        <input type="text" id="film_name" name="film_name" value="{{ film[1] }}" required><br><br>
+
+        <label for="release_year">Release Year:</label><br>
+        <input type="number" id="release_year" name="release_year" value="{{ film[2] }}"><br><br>
+
+        <label for="watched_time">Watched Time:</label><br>
+        <input type="text" id="watched_time" name="watched_time" value="{{ film[3] }}"><br><br>
+
+        <label for="rating">Rating (0-10):</label><br>
+        {% if film[4] %}
+            <input type="text" id="rating" name="rating" value="{{ film[4] }}" pattern="^(?:\d*\.\d{1,2}|\d+)$" title="Enter a number between 0 and 10" ><br><br>
+        {% else %}
+            <input type="text" id="rating" name="rating" pattern="^(?:\d*\.\d{1,2}|\d+)$" title="Enter a number between 0 and 10" ><br><br>
+        {% endif %}
+
+        <label for="review">Review:</label><br>
+        {% if film[5] %}
+            <textarea id="review" name="review">{{ film[5] }}</textarea><br><br>
+        {% else %}
+            <textarea id="review" name="review"></textarea><br><br>
+        {% endif %}
+
+
+        <input type="submit" value="Update">
+    </form>
+</body>
+</html>

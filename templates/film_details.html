@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Film Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='film_details.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Film Details</h1>
+        <div class="actions">
+            <a href="{{ url_for('edit', film_id=film[0]) }}" class="edit-btn">Edit</a>
+            <a href="#" onclick="confirmDelete('{{ url_for('delete', film_id=film[0]) }}')" class="delete-btn">Delete</a>
+        </div>
+        <div class="film-details">
+            <h2>{{ film[1] }}</h2>
+            <p><strong>Release Year:</strong> {{ film[2] }}</p>
+            <p><strong>Watched Time:</strong> {{ film[3] }}</p>
+            <p><strong>Rating:</strong> {{ film[4] }}</p>
+            <p><strong>Review:</strong> {{ film[5] }}</p>
+        </div>
+        <br>
+        <a href="{{ url_for('saved_list') }}">Back to Saved Film Entries</a>
+    </div>
+
+    <script>
+        function confirmDelete(deleteUrl) {
+            if (confirm("Are you sure you want to delete this film?")) {
+                window.location.href = deleteUrl;
+            }
+        }
+    </script>
+
+</body>
+</html>
