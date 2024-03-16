@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, g, redirect, url_for, flash
 import sqlite3
 from datetime import datetime
+import secrets
 
 app = Flask(__name__, static_folder='styles')
+app.secret_key = secrets.token_hex(16)
 
 DATABASE = 'films.db'
 
@@ -32,6 +34,13 @@ def initialize_database():
             review TEXT
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS watchlist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            film_name TEXT NOT NULL,
+            release_year INTEGER
+        )
+    ''')
     db.commit()
     cursor.close()
 
@@ -46,9 +55,16 @@ def index():
         
         rating = request.form['rating']
         review = request.form['review']
-
+        
         db = get_db()
         cursor = db.cursor()
+        cursor.execute("SELECT * FROM watchlist WHERE LOWER(film_name) = ? AND release_year = ?", (film_name.lower(), release_year))
+        existing_movie = cursor.fetchone()
+        
+        if existing_movie:
+            flash('''Movie present in watchlist''')
+            cursor.close()
+            return redirect(url_for('watchlist'))
         cursor.execute("INSERT INTO films (film_name, release_year, watched_time, rating, review) VALUES (?, ?, ?, ?, ?)",
                        (film_name, release_year, watched_time, rating, review))
         db.commit()
@@ -163,6 +179,80 @@ def saved_list():
 
     cursor.close()
     return render_template('saved_list.html', films=films)
+
+@app.route('/add_to_watchlist', methods=['GET', 'POST'])
+def add_to_watchlist():
+    if request.method == 'POST':
+        film_name = request.form['film_name']
+        release_year = request.form['release_year']
+        
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Check if the movie is already in the saved list
+        cursor.execute("SELECT * FROM films WHERE LOWER(film_name) = ? AND release_year = ?", (film_name.lower(), release_year))
+        existing_movie = cursor.fetchone()
+        
+        if existing_movie:
+            flash('''You've watched the movie already!''')
+            cursor.close()
+            return redirect(url_for('saved_list'))
+
+        # If the movie is not in the saved list, add it to the watchlist
+        cursor.execute("INSERT INTO watchlist (film_name, release_year) VALUES (?, ?)", (film_name, release_year))
+        db.commit()
+        cursor.close()
+        
+        flash('Movie added to watchlist successfully!')
+        return redirect(url_for('watchlist'))
+
+    return render_template('add_to_watchlist.html')
+
+@app.route('/watchlist')
+def watchlist():
+    db = get_db()
+    cursor = db.cursor()
+    
+    cursor.execute("SELECT * FROM watchlist")
+    watchlist = cursor.fetchall()
+    
+    cursor.close()
+    return render_template('watchlist.html', watchlist=watchlist)
+
+@app.route('/edit_watchlist/<int:movie_id>', methods=['POST'])
+def edit_watchlist(movie_id):
+    db = get_db()
+    cursor = db.cursor()
+
+    if request.method == 'POST':
+        film_name = request.form['film_name']
+        release_year = request.form['release_year']
+        
+        cursor.execute("SELECT * from films WHERE LOWER(film_name) = ? AND release_year = ?", (film_name.lower(), release_year))
+        existing_movie = cursor.fetchone()
+        
+        if existing_movie:
+            return redirect(url_for('saved_list'))
+        cursor.execute('''
+            UPDATE watchlist
+            SET film_name=?, release_year=?
+            WHERE id=?
+        ''', (film_name, release_year, movie_id))
+        db.commit()
+        cursor.close()
+        return redirect(url_for('watchlist'))
+
+@app.route('/delete_from_watchlist/<int:movie_id>', methods=['GET'])
+def delete_from_watchlist(movie_id):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("DELETE FROM watchlist WHERE id=?", (movie_id,))
+    db.commit()
+    cursor.close()
+
+    return redirect(url_for('watchlist'))
+
 
 
 if __name__ == '__main__':

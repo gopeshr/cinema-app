@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='watchlist.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Watchlist <a href="/add_to_watchlist"><button class="btn">Add to Watchlist</a></h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Film Name</th>
+                    <th>Release Year</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movie in watchlist %}
+                <tr>
+                    <td id="film_name_{{ movie[0] }}">{{ movie[1] }}</td>
+                    <td id="release_year_{{ movie[0] }}">{{ movie[2] }}</td>
+                    <td>
+                        <button onclick="editMovie({{ movie[0] }})">Edit</button> |
+                        <a href="#" onclick="confirmDelete('{{ url_for('delete_from_watchlist', movie_id=movie[0]) }}')">Delete</a>
+                        <button style="display: none;" id="save_button_{{ movie[0] }}" onclick="saveMovie({{ movie[0] }})">Save</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/"><button class="btn">Back to HomePage</button></a>
+    </div>
+    <script>
+        function editMovie(movieId) {
+            document.getElementById('film_name_' + movieId).innerHTML = '<input type="text" id="edit_film_name_' + movieId + '" value="' + document.getElementById('film_name_' + movieId).innerText + '">';
+            document.getElementById('release_year_' + movieId).innerHTML = '<input type="text" id="edit_release_year_' + movieId + '" value="' + document.getElementById('release_year_' + movieId).innerText + '">';
+            document.getElementById('save_button_' + movieId).style.display = 'inline-block';
+        }
+
+        function saveMovie(movieId) {
+            var filmName = document.getElementById('edit_film_name_' + movieId).value;
+            var releaseYear = document.getElementById('edit_release_year_' + movieId).value;
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/edit_watchlist/' + movieId, true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                    // Reload the page after successful edit
+                    location.reload();
+                }
+            }
+            xhr.send('film_name=' + encodeURIComponent(filmName) + '&release_year=' + encodeURIComponent(releaseYear));
+        }
+
+        function confirmDelete(deleteUrl) {
+            if (confirm("Are you sure you want to delete this film?")) {
+                window.location.href = deleteUrl;
+            }
+        }
+    </script>
+</body>
+</html>

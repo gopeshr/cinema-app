@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add to Watchlist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='add_to_watchlist.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Add to Watchlist</h1>
+        <form action="{{ url_for('add_to_watchlist') }}" method="POST">
+            <label for="film_name">Film Name:</label><br>
+            <input type="text" id="film_name" name="film_name"><br>
+            <label for="release_year">Release Year:</label><br>
+            <input type="text" id="release_year" name="release_year"><br><br>
+            <button type="submit">Add</button>
+        </form>
+        <a href="/"><button class="btn">Back to HomePage</button></a>
+    </div>
+</body>
+</html>

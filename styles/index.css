@@ -1,14 +1,23 @@
 /* index.css */
 
 /* Styles specific to index.html */
+.appname {
+    margin-left: 400px; /* Adjust the value as needed */
+    color: rgb(98, 190, 7);
+    -webkit-text-stroke-width: 1px; /*   Width of the outline */
+    -webkit-text-stroke-color: darkblue; /* Color of the outline */
+    text-shadow: 0 0 10px rgba(208, 15, 15, 0.8);
+    font-family: cursive;
+}
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #01957fbe;
     margin: 20px;
 }
 
 form {
-    background-color: #fff;
+    background-color: #159786;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -26,7 +35,7 @@ textarea {
     width: 100%;
     padding: 8px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #ebebeb;
     border-radius: 4px;
     box-sizing: border-box;
 }
